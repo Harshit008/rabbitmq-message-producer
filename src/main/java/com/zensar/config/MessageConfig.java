@@ -6,6 +6,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.Jackson2XmlMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -30,7 +31,11 @@ public class MessageConfig {
     public Queue queueXml() {
         return new Queue(XML_QUEUE);
     }
-
+    
+    @Bean
+    public Queue queueJson() {
+        return new Queue(JSON_QUEUE);
+    }
     
     @Bean
     public TopicExchange exchangeForXML() {
@@ -39,7 +44,7 @@ public class MessageConfig {
 
 
     @Bean
-    public Binding bindingXml(Queue queue, TopicExchange exchangeForXML) {
+    public Binding bindingXml(@Qualifier(value = "queueXml") Queue queue,@Qualifier("exchangeForXML") TopicExchange exchangeForXML) {
         return BindingBuilder.bind(queue).to(exchangeForXML).with(XML_ROUTING_KEY);
     }
     
@@ -56,23 +61,13 @@ public class MessageConfig {
         return rabbitTemplate;
     }
     
-    
-
-
-
-    
-    @Bean
-    public Queue queue() {
-        return new Queue(JSON_QUEUE);
-    }
-    
     @Bean
     public TopicExchange exchangeForJSON() {
         return new TopicExchange(JSON_EXCHANGE);
     }
     
     @Bean
-    public Binding binding(Queue queue, TopicExchange exchangeForJSON) {
+    public Binding binding(@Qualifier(value = "queueJson")   Queue queue,@Qualifier("exchangeForJSON") TopicExchange exchangeForJSON) {
         return BindingBuilder.bind(queue).to(exchangeForJSON).with(JSON_ROUTING_KEY);
     }
 
