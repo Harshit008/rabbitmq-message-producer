@@ -1,6 +1,8 @@
 package com.zensar.controller;
 
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,12 +12,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.zensar.beans.JsonOrderBean;
+import com.zensar.beans.XmlFulfilmentOrderBean;
 import com.zensar.config.MessageConfig;
 
 
 @RestController
 public class MessageProducerController {
 
+	private static final Logger logger = LoggerFactory.getLogger(MessageProducerController.class);
 	
 	@Qualifier(value = "templateForJson")
 	@Autowired
@@ -27,7 +31,7 @@ public class MessageProducerController {
 	
 	@PostMapping("/orderJsonMessage")
 	public String produceJsonMessage(@RequestBody JsonOrderBean order){
-		System.out.println(order);
+		logger.info("Json order being pushed to json_order_queue: "+order);
 		JSONObject json = new JSONObject(order);
 		templateforJson.convertAndSend(MessageConfig.JSON_EXCHANGE, MessageConfig.JSON_ROUTING_KEY, order);
 		//template.convertAndSend(MessageConfig.JSON_EXCHANGE, MessageConfig.JSON_ROUTING_KEY, order);
@@ -36,8 +40,8 @@ public class MessageProducerController {
 	}
 	
 	@PostMapping("/orderXmlMessage")
-	public String produceXmlMessage(@RequestBody JsonOrderBean order) {
-		System.out.println(order);
+	public String produceXmlMessage(@RequestBody XmlFulfilmentOrderBean order) {
+		logger.info("Xml Order being pushed to xml_order_queue: "+order);
 //		JSONObject json = new JSONObject(order);
 //		String xml = XML.toString(json);
 		templateforXml.convertAndSend(MessageConfig.XML_EXCHANGE, MessageConfig.XML_ROUTING_KEY, order);

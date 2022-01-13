@@ -12,8 +12,8 @@ import lombok.ToString;
 public class XmlFulfilmentOrderBean {
 	
 	private String orderId;
-	private String orderType;
-	private String partnerId;
+	private String orderTypeCode;
+	private String partnerOrderId;
 	private String orderStatus;
 	private String messageCreatedTimeStamp;
 	private String fulfilmentChannelCode;
@@ -21,7 +21,7 @@ public class XmlFulfilmentOrderBean {
 	private String orderStatusDescription;
 	private String sellZlDivisonnbr;
 	private String sellZlLocationnbr;
-	private Status status;
+	private Source source;
 	private OrderTotals orderTotal;
 	private BillingAddress billingAddress;
 
