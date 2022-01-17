@@ -26,10 +26,10 @@ public class SwaggerConfiguration {
 
     private ApiInfo getApiInfo() {
         return new ApiInfoBuilder()
-                .title("Macys Macys message consumer API")
+                .title("Macys message producer service API")
                 .version("1.0")
-                .description("API for Macys message consumer Application")
-                .contact(new Contact("Macys Macys message consumer Application", "NA", "srivastavaharshit008@gmail.com"))
+                .description("API for Macys message producer application")
+                .contact(new Contact("Macys message producer application", "NA", "srivastavaharshit008@gmail.com"))
                 .license("Apache License Version 2.0")
                 .build();
     }
