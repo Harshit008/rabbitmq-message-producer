@@ -33,9 +33,7 @@ public class MessageProducerController {
 	@PostMapping("/orderJsonMessage")
 	public String produceJsonMessage(@RequestBody JsonOrderBean order){
 		logger.info("Json order being pushed to json_order_queue: "+order);
-		JSONObject json = new JSONObject(order);
 		templateforJson.convertAndSend(MessageConfig.JSON_EXCHANGE, MessageConfig.JSON_ROUTING_KEY, order);
-		//template.convertAndSend(MessageConfig.JSON_EXCHANGE, MessageConfig.JSON_ROUTING_KEY, order);
 		return "Success!!";
 		
 	}
@@ -43,10 +41,19 @@ public class MessageProducerController {
 	@PostMapping("/orderXmlMessage")
 	public String produceXmlMessage(@RequestBody XmlFulfilmentOrderBean order) {
 		logger.info("Xml Order being pushed to xml_order_queue: "+order);
-//		JSONObject json = new JSONObject(order);
-//		String xml = XML.toString(json);
 		templateforXml.convertAndSend(MessageConfig.XML_EXCHANGE, MessageConfig.XML_ROUTING_KEY, order);
 		return "Success!!";
 		
 	}
+
+	public MessageProducerController(AmqpTemplate templateforJson, AmqpTemplate templateforXml) {
+		super();
+		this.templateforJson = templateforJson;
+		this.templateforXml = templateforXml;
+	}
+
+	public MessageProducerController() {
+		super();
+	}
+	
 }
