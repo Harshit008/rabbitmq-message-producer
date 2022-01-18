@@ -15,12 +15,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.zensar.beans.JsonOrderBean;
 import com.zensar.beans.XmlFulfilmentOrderBean;
 import com.zensar.config.MessageConfig;
+import com.zensar.exceptions.MacysRunTimeException;
 
 @RequestMapping("/producer")
 @RestController
 public class MessageProducerController {
 
 	private static final Logger logger = LoggerFactory.getLogger(MessageProducerController.class);
+	StringBuffer cause= new StringBuffer();
 	
 	@Qualifier(value = "templateForJson")
 	@Autowired
@@ -32,18 +34,56 @@ public class MessageProducerController {
 	
 	@PostMapping("/orderJsonMessage")
 	public String produceJsonMessage(@RequestBody JsonOrderBean order){
-		logger.info("Json order being pushed to json_order_queue: "+order);
-		templateforJson.convertAndSend(MessageConfig.JSON_EXCHANGE, MessageConfig.JSON_ROUTING_KEY, order);
+		try {
+				logger.info("Json order being pushed to json_order_queue: "+order);
+				templateforJson.convertAndSend(MessageConfig.JSON_EXCHANGE, MessageConfig.JSON_ROUTING_KEY, order);
+		}catch (MacysRunTimeException e) {
+
+			logger.error("--------------------EXCEPTIONAL EVENT LOG BEGINs-----------------------------------");
+			logger.error("ERROR MESSAGE AS--" + e.getMessage() + " ERROR CAUSE :" + e.getCause());
+			logger.error("Exception caught in produceJsonMessage Method--");
+			logger.error("--------------------EXCEPTIONAL EVENT LOG ENDS-----------------------------------");
+			cause.append(", ").append(e.getMessage());
+
+		} catch (Exception e) {
+
+			logger.error("--------------------EXCEPTIONAL EVENT LOG BEGINs-----------------------------------");
+			logger.error("ERROR MESSAGE AS--" + e.getMessage() + " ERROR CAUSE :" + e.getCause());
+			logger.error("Exception caught in produceJsonMessage Method--");
+			logger.error("--------------------EXCEPTIONAL EVENT LOG ENDS-----------------------------------");
+			cause.append(", ").append(e.getMessage());
+			throw new MacysRunTimeException(e.getMessage());
+		}
+		
 		return "Success!!";
 		
 	}
 	
 	@PostMapping("/orderXmlMessage")
 	public String produceXmlMessage(@RequestBody XmlFulfilmentOrderBean order) {
-		logger.info("Xml Order being pushed to xml_order_queue: "+order);
-		templateforXml.convertAndSend(MessageConfig.XML_EXCHANGE, MessageConfig.XML_ROUTING_KEY, order);
-		return "Success!!";
+		try {
+				logger.info("Xml Order being pushed to xml_order_queue: "+order);
+				templateforXml.convertAndSend(MessageConfig.XML_EXCHANGE, MessageConfig.XML_ROUTING_KEY, order);
+				
+		}catch (MacysRunTimeException e) {
+
+			logger.error("--------------------EXCEPTIONAL EVENT LOG BEGINs-----------------------------------");
+			logger.error("ERROR MESSAGE AS--" + e.getMessage() + " ERROR CAUSE :" + e.getCause());
+			logger.error("Exception caught in produceXmlMessage Method--");
+			logger.error("--------------------EXCEPTIONAL EVENT LOG ENDS-----------------------------------");
+			cause.append(", ").append(e.getMessage());
+
+		} catch (Exception e) {
+
+			logger.error("--------------------EXCEPTIONAL EVENT LOG BEGINs-----------------------------------");
+			logger.error("ERROR MESSAGE AS--" + e.getMessage() + " ERROR CAUSE :" + e.getCause());
+			logger.error("Exception caught in produceXmlMessage Method--");
+			logger.error("--------------------EXCEPTIONAL EVENT LOG ENDS-----------------------------------");
+			cause.append(", ").append(e.getMessage());
+			throw new MacysRunTimeException(e.getMessage());
+		}
 		
+		return "Success!!";
 	}
 
 	public MessageProducerController(AmqpTemplate templateforJson, AmqpTemplate templateforXml) {
